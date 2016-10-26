@@ -1,0 +1,27 @@
+{
+    "name": "clinoge/php-prelude",
+    "description": "Prelude for PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Carlos Gottberg",
+            "email": "42linoge@gmail.com"
+        }
+    ],
+    "require": {
+        "steos/php-quickcheck": "dev-master",
+        "myclabs/deep-copy": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Linoge\\PHPFunctional\\": "src/"
+        },
+        "files": [
+            "src/Prelude.php"
+        ]
+    },
+    "require-dev": {
+        "phpdocumentor/phpdocumentor": "^2.9"
+    }
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <title>
+        PHP Prelude
+    </title>
+    <parser>
+        <target>docs/</target>
+    </parser>
+    <transformer>
+        <target>docs/</target>
+    </transformer>
+    <transformations>
+        <template name="responsive-twig" />
+    </transformations>
+    <files>
+        <directory>.</directory>
+        <ignore>vendor/*</ignore>
+    </files>
+</phpdoc>
