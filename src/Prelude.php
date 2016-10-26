@@ -50,8 +50,7 @@ function Y($fn) {
  * @author Carlos Gottberg <42linoge@gmail.com>
  **/
 function partial($fn, ... $args) {
-    $refl_function = new ReflectionFunction($fn);
-    $n_params = $refl_function->getNumberOfParameters();
+    $n_params = arity($fn);
 
     $partial = function ($recurse) {
         return function ($fn, $params_left, $args) use ($recurse) {
@@ -62,8 +61,6 @@ function partial($fn, ... $args) {
             return function (... $args_provided)
                 use ($params_left, $recurse, $args, $fn) {
                     $n_provided = count($args_provided);
-
-                    var_dump($params_left - $n_provided);
 
                     if (count($args_provided) === 0) {
                         return $recurse($fn, $params_left, $args);
@@ -97,8 +94,7 @@ function partial($fn, ... $args) {
  * @author Carlos Gottberg <42linoge@gmail.com>
  **/
 function curry($fn) {
-    $refl_function = new ReflectionFunction($fn);
-    $n_params = $refl_function->getNumberOfParameters();
+    $n_params = arity($fn);
 
     $_curry = function ($recurse) {
         return function ($fn, $params_left, $args) use ($recurse) {
@@ -116,6 +112,11 @@ function curry($fn) {
     return Y($_curry)($fn, $n_params, []);
 }
 
+function arity($fn) {
+    $refl = new ReflectionFunction($fn);
+    return $refl->getNumberOfParameters();
+}
+
 /**
  * uncurry
  *
@@ -127,8 +128,17 @@ function curry($fn) {
  * @return callable
  * @author Carlos Gottberg <42linoge@gmail.com>
  **/
-function uncurry($fn) {
+function uncurry(... $args) {
+    $uncurry = function($fn) {
+        return function(... $args) use ($fn) {
+            if (count($args) < arity($fn)) {
+                error('Not enough argument for call');
+            }
+            return $fn(... $args);
+        };
+    };
 
+    return partial($uncurry, ... $args);
 }
 
 /**
@@ -342,6 +352,50 @@ function filter(... $args) {
     return partial($filter, ... $args);
 }
 
+/**
+ * equals
+ *
+ * equals operator turn to a function
+ *
+ * equals :: a -> b -> Bool
+ *
+ * @param mixed $x
+ * @param mixed $y
+ * @return bool
+ * @author Carlos Gottberg <42linonge@gmail.com>
+ **/
+function equals(... $args) {
+    $equals = function($x, $y) {
+        return $x === $y;
+    };
+
+    return partial($equals, ... $args);
+}
+
+/**
+ * compose
+ *
+ * function composition
+ *
+ * compose :: (b -> c) -> (a -> b) -> ... (w -> a) -> w -> c
+ *
+ * @param callable $f1
+ * @param callable $fn
+ * @return callable
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function compose(... $args) {
+    $compose = function($args) {
+        return array_reduce($args, function($acc, $fn) {
+            return function($x) use ($fn, $acc) {
+                return $acc($fn($x));
+            };
+        }, id());
+    };
+
+    return partial($compose, $args);
+}
+
 /** dispatch
  *
  * dispatches a function throguh a dispatcher
@@ -363,8 +417,7 @@ function dispatch(... $args) {
         $dispatching_fn = $dispatcher[$name]['dispatching_function'];
 
         $n_args = count($args);
-        $refl_dispatching = new ReflectionFunction($dispatching_fn);
-        $n_params = $refl_dispatching->getNumberOfParameters();
+        $n_params = arity($dispatching_fn);
 
         if ($n_params === 1) {
             $result = map($dispatching_fn, $args);
@@ -392,4 +445,23 @@ function dispatch(... $args) {
     };
 
     return partial($dispatch, ... $args);
+}
+
+/**
+ * export
+ *
+ * register all functions within the module
+ *
+ * export :: Dispatcher -> Dispatcher
+ *
+ * @param array
+ * @return array
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function export(... $args) {
+    $export = function($dispatcher) {
+
+    };
+
+    return partial($export, ... $args);
 }

@@ -1,6 +1,6 @@
 <?php
 
-require "../vendor/autoload.php";
+require dirname(__DIR__) . "/vendor/autoload.php";
 
 use Linoge\PHPFunctional\Prelude;
 
@@ -27,3 +27,17 @@ $dispatcher = Prelude\defmethod($dispatcher, '++', ['string'], function($a, $b) 
 
 var_dump(Prelude\dispatch($dispatcher, '++', ["Carlos ", "Gottberg"]));
 var_dump(Prelude\dispatch($dispatcher, '++', [[1,2,3],[4,5,6]]));
+
+$add = function($x, $y) {
+    return $x + $y;
+};
+
+$multiply = function($x, $y) {
+    return $x * $y;
+};
+
+$add5 = Prelude\partial($add, 5);
+$multiply3 = Prelude\partial($multiply, 3);
+
+$add_and_multiply = Prelude\compose($multiply3, $add5);
+var_dump($add_and_multiply(3));
