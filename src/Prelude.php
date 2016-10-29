@@ -447,6 +447,62 @@ function dispatch(... $args) {
     return partial($dispatch, ... $args);
 }
 
+/** stream_cons
+ *
+ * create a new stream
+ *
+ * stream_cons :: a -> ([b] -> c) -> [b] -> (a, ([b] -> c))
+ *
+ * @param mixed $a
+ * @param callable $fn
+ * @param array $b
+ * @return array
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function stream_cons(... $args) {
+    $stream_cons = function($x, $fn, ...$args) {
+        return [$x, function () { return $fn(...$args); }];
+    };
+
+    return $stream_cons(... $args);
+}
+
+/** stream_car
+ *
+ * get first element out of a stream
+ *
+ * stream_car :: Stream a b -> a
+ *
+ * @param array $stream
+ * @return mixed $a
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function stream_car(... $args) {
+    $stream_car = function($stream) {
+        return $stream[0];
+    };
+
+    return partial($stream_car, ... $args);
+}
+
+/** stream_cdr
+ *
+ * get second element out of a stream
+ *
+ * stream_cdr :: Stream a b -> b
+ *
+ * @param array $stream
+ * @return mixed $b
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function stream_cdr(... $args) {
+    $stream_cdr = function($stream) {
+        return $stream[1]();
+    };
+
+    return partial($stream_cdr, ... $args);
+}
+
 /**
  * export
  *
