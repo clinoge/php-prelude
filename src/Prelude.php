@@ -37,7 +37,7 @@ function Y($fn) {
     return $call_fn($make_fn);
 }
 
-/**
+/**x
  * partial
  *
  * creates a function that might be partial applied
@@ -410,7 +410,11 @@ function compose(... $args) {
  **/
 function dispatch(... $args) {
     $dispatch = function ($dispatcher, $name, $args) {
-        if (!isset($dispatcher[$name])) {
+        $exists_in_dispatcher = isset($dispatcher[$name]);
+        $exists_outside = function_exists($name);
+        $exists = $exists_in_dispatcher || $exists_outside;
+
+        if ($exists_in_dispatcher === false) {
             error('No function with name: ' . $name);
         }
 
@@ -504,13 +508,51 @@ function stream_cdr(... $args) {
 }
 
 /**
+ * car
+ *
+ * get first element out of a list
+ *
+ * car :: [a] -> a
+ *
+ * @param array $xs
+ * @return mixed $x
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function car(... $args) {
+    $car = function($xs) {
+        return $xs[0];
+    };
+
+    return partial($car, ... $args);
+}
+
+/**
+ * cdr
+ *
+ * get tail of list
+ *
+ * cdr :: [a] -> [a]
+ *
+ * @param mixed $xs
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function cdr(... $args) {
+    $cdr = function ($xs) {
+        return array_slice($xs, 1);
+    };
+
+    return partial($cdr, ... $args);
+}
+
+/**
  * export
  *
  * register all functions within the module
  *
  * export :: Dispatcher -> Dispatcher
  *
- * @param array
+ * @param array $dispatcher
  * @return array
  * @author Carlos Gottberg <42linoge@gmail.com>
  **/
