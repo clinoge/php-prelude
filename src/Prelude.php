@@ -12,6 +12,7 @@ use ReflectionFunction;
 use DeepCopy\DeepCopy;
 use Exception;
 
+const module = 'Linoge\\PHPFunctional\\Prelude\\';
 /**
  * Y
  *
@@ -36,6 +37,7 @@ function Y($fn) {
 
     return $call_fn($make_fn);
 }
+const Y = module . 'Y';
 
 /**x
  * partial
@@ -82,6 +84,8 @@ function partial($fn, ... $args) {
     return Y($partial)($fn, $n_params - count($args), $args);
 }
 
+const partial = module . 'partial';
+
 /**
  * curry
  *
@@ -112,10 +116,25 @@ function curry($fn) {
     return Y($_curry)($fn, $n_params, []);
 }
 
+const curry = module . 'curry';
+
+/**
+ * arity
+ *
+ * return the arity of a function
+ *
+ * arity :: (a -> ... -> z) -> Int
+ *
+ * @param callable $fn
+ * @return int
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
 function arity($fn) {
     $refl = new ReflectionFunction($fn);
     return $refl->getNumberOfParameters();
 }
+
+const arity = module . 'arity';
 
 /**
  * uncurry
@@ -141,6 +160,8 @@ function uncurry(... $args) {
     return partial($uncurry, ... $args);
 }
 
+const uncurry = module . 'uncurry';
+
 /**
  * id
  *
@@ -158,6 +179,8 @@ function id(... $args) {
 
     return partial($id, ... $args);
 }
+
+const id = module . 'id';
 
 /**
  * pair
@@ -178,12 +201,15 @@ function pair(... $args) {
     return partial($pair, ... $args);
 }
 
+const pair = module . 'pair';
+
 /**
  * zip
  *
  * zip a pair of arrays together
  *
  * zip :: [a] -> [b] -> [(a,b)]
+ *
  * @param array $xs
  * @param array $ys
  * @return array
@@ -196,6 +222,141 @@ function zip(... $args) {
 
     return partial($zip, ... $args);
 }
+
+const zip = module . 'zip';
+
+/**
+ * foldl
+ *
+ * fold elements to the left
+ *
+ * foldl :: (a -> b -> a) -> a -> [b] -> a
+ *
+ * @param callable $fn
+ * @param mixed $initial
+ * @param array $xs
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function foldl(... $args) {
+    $foldl = function($recurse) {
+        return partial(function ($fn, $acc, $xs) use ($recurse) {
+            if (is_empty($xs)) {
+                return $acc;
+            }
+            return $recurse($fn, $fn($acc, car($xs)), cdr($xs));
+        });
+    };
+
+    return Y($foldl)(... $args);
+}
+
+const foldl = module . 'foldl';
+
+/**
+ * l_or
+ *
+ * or operation turn to a function
+ *
+ * l_or :: Bool -> Bool -> Bool
+ *
+ * @param boolean $x
+ * @param boolean $y
+ * @return boolean
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function l_or(... $args) {
+    $l_or = function($x, $y) {
+        if ($x === true || $y === true) {
+            return true;
+        }
+
+        return false;
+    };
+
+    return partial($l_or, ...$args);
+}
+
+const l_or = module . 'l_or';
+
+/**
+ * max
+ *
+ * return biggest element between
+ *
+ * max :: a -> a -> a
+ *
+ * @param mixed $x
+ * @param mixed $y
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function max(... $args) {
+    $max = function($x, $y) {
+        if ($x > $y) {
+            return $x;
+        }
+        else {
+            return $y;
+        }
+    };
+
+    return partial($max, ... $args);
+}
+
+const max = module . 'max';
+
+/**
+ * foldr
+ *
+ * fold elements to the right
+ *
+ * foldr :: (a -> b -> b) -> b -> [a] -> b
+ *
+ * @param callable $fn
+ * @param mixed $initial
+ * @param array $xs
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function foldr(... $args) {
+    $foldr = function($recurse) {
+        return function($fn, $initial, $xs) use ($recurse) {
+            if (is_empty($xs)) {
+                return $initial;
+            }
+            return $fn(car($xs), $recurse($fn, $initial, cdr($xs)));
+        };
+    };
+
+    return partial(Y($foldr), ... $args);
+}
+
+const foldr = module . 'foldr';
+
+/**
+ * is_empty
+ *
+ * true if a list is empty
+ *
+ * is_empty :: [a] -> Bool
+ *
+ * @param array $xs
+ * @return boolean
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function is_empty(... $args) {
+    $is_empty = function($xs) {
+        if (empty($xs) === true) {
+            return true;
+        }
+        return false;
+    };
+
+    return partial($is_empty, ... $args);
+}
+
+const is_empty = module . 'is_empty';
 
 /**
  * map
@@ -217,7 +378,10 @@ function map(... $args) {
     return partial($map, ... $args);
 }
 
-/** make_dispatcher
+const map = module . 'map';
+
+/**
+ * make_dispatcher
  *
  * construct an instance of the dispatcher
  *
@@ -229,6 +393,8 @@ function map(... $args) {
 function make_dispatcher() {
     return [];
 }
+
+const make_dispatcher = module . 'make_dispatcher';
 
 /**
  * error
@@ -249,6 +415,8 @@ function error(... $args) {
     return partial($error, ... $args);
 }
 
+const error = module . 'error';
+
 /** copy
  *
  * copy anything
@@ -267,6 +435,8 @@ function copy(... $args) {
 
     return partial($copy, ... $args);
 }
+
+const copy = module . 'copy';
 
 /** defgeneric
  *
@@ -297,6 +467,8 @@ function defgeneric(... $args) {
     return partial($defgeneric, ... $args);
 }
 
+const defgeneric = module . 'defgeneric';
+
 /** defmethod
  *
  * instantiates a lisp-like generic method
@@ -309,7 +481,7 @@ function defgeneric(... $args) {
  * @param callable $fn
  * @return mixed
  * @author Carlos Gottberg <42linoge@gmail.com>
-**/
+ **/
 function defmethod(... $args) {
     $defmethod = function($dispatcher, $name, $matching, $fn) {
         if (!isset($dispatcher[$name])) {
@@ -327,6 +499,8 @@ function defmethod(... $args) {
 
     return partial($defmethod, ... $args);
 }
+
+const defmethod = module . 'defmethod';
 
 /** filter
  *
@@ -352,6 +526,8 @@ function filter(... $args) {
     return partial($filter, ... $args);
 }
 
+const filter = module . 'filter';
+
 /**
  * equals
  *
@@ -371,6 +547,8 @@ function equals(... $args) {
 
     return partial($equals, ... $args);
 }
+
+const equals = module . 'equals';
 
 /**
  * compose
@@ -395,6 +573,8 @@ function compose(... $args) {
 
     return partial($compose, $args);
 }
+
+const compose = module . 'compose';
 
 /** dispatch
  *
@@ -451,6 +631,8 @@ function dispatch(... $args) {
     return partial($dispatch, ... $args);
 }
 
+const dispatch = module . 'dispatch';
+
 /** stream_cons
  *
  * create a new stream
@@ -471,6 +653,8 @@ function stream_cons(... $args) {
     return $stream_cons(... $args);
 }
 
+const stream_cons = module . 'stream_cons';
+
 /** stream_car
  *
  * get first element out of a stream
@@ -489,6 +673,8 @@ function stream_car(... $args) {
     return partial($stream_car, ... $args);
 }
 
+const stream_car = module . 'stream_car';
+
 /** stream_cdr
  *
  * get second element out of a stream
@@ -506,6 +692,8 @@ function stream_cdr(... $args) {
 
     return partial($stream_cdr, ... $args);
 }
+
+const stream_cdr = module . 'stream_cdr';
 
 /**
  * car
@@ -526,6 +714,8 @@ function car(... $args) {
     return partial($car, ... $args);
 }
 
+const car = module . 'car';
+
 /**
  * cdr
  *
@@ -539,11 +729,120 @@ function car(... $args) {
  **/
 function cdr(... $args) {
     $cdr = function ($xs) {
+        if (is_empty($xs)) {
+            return [];
+        }
         return array_slice($xs, 1);
     };
 
     return partial($cdr, ... $args);
 }
+
+const cdr = module . 'cdr';
+
+/**
+ * is_list
+ *
+ * is the argument a list?
+ *
+ * is_list :: a -> Bool
+ *
+ * @param mixed $a
+ * @return boolean
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function is_list(... $args) {
+    $is_list = function($x) {
+        if (is_array($x) === true) {
+            return true;
+        }
+        return false;
+    };
+
+    return partial($is_list, ... $args);
+}
+
+const is_list = module . 'is_list';
+
+/**
+ * any
+ *
+ * does any of the function application return true
+ *
+ * any :: (a -> Bool) -> [a] -> Bool
+ *
+ * @param callable $fn
+ * @param array $xs
+ * @return boolean
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function any(... $args) {
+    $any = function($fn, $xs) {
+        $xss = map($fn, $xs);
+        return foldl(l_or, false, $xs);
+    };
+
+    return partial($any, ... $args);
+}
+
+const any = module . 'any';
+
+/**
+ * has_list
+ *
+ * does the list contain any sub-list
+ *
+ * has_list :: [a] -> Bool
+ *
+ * @param array $xs
+ * @return boolean
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function has_list(... $args) {
+    $has_list = function($xs) {
+        return any(is_list, $xs);
+    };
+
+    return partial($has_list, ... $args);
+}
+
+const has_list = module . 'has_list';
+
+/**
+ * evaluate
+ *
+ * evaluate an expression a la Lisp
+ *
+ * evaluate :: ??
+ *
+ * @param $expr
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function evaluate(... $args) {
+    $evaluate = function($recurse) {
+        return partial(function($xs) use ($recurse) {
+            if (! is_list($xs)) {
+                return $xs;
+            }
+
+            $result = map($recurse, $xs);
+
+            $fn = car($xs);
+            $args = cdr($result);
+
+            if (function_exists($fn) || is_callable($fn)) {
+                return $fn(... $args);
+            }
+
+            return $xs;
+        });
+    };
+
+    return Y($evaluate)(... $args);
+}
+
+const evaluate = module . 'evaluate';
 
 /**
  * export
@@ -563,3 +862,5 @@ function export(... $args) {
 
     return partial($export, ... $args);
 }
+
+const export = module . 'export';
