@@ -845,6 +845,55 @@ function evaluate(... $args) {
 const evaluate = module . 'evaluate';
 
 /**
+ * l_and
+ *
+ * and operation turn to a function
+ *
+ * l_and :: Bool -> Bool -> Bool
+ *
+ * @param $x
+ * @param $y
+ * @return boolean
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function l_and(... $args) {
+    $l_and = function($x, $y) {
+        if ($x === true && $y === true) {
+            return true;
+        }
+        return false;
+    };
+
+    return partial($l_and, ... $args);
+}
+
+const l_and = module . 'l_and';
+
+/**
+ * all
+ *
+ * do a function, applied to every argument on a list,
+ * always returns true?
+ *
+ * all :: (a -> Bool) -> [a] -> Bool
+ *
+ * @param callable $fn
+ * @param array $xs
+ * @return boolean
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function all(... $args) {
+    $all = function($fn, $xs) {
+        $xss = map($fn, $xs);
+        return foldl(l_and, true, $xss);
+    };
+
+    return partial($all, ... $args);
+}
+
+const all = module . 'all';
+
+/**
  * export
  *
  * register all functions within the module
