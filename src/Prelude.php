@@ -254,6 +254,94 @@ function foldl(... $args) {
 const foldl = module . 'foldl';
 
 /**
+ * add
+ *
+ * add two numbers
+ *
+ * add :: (Num a) => a -> a -> a
+ *
+ * @param mixed $x
+ * @param mixed $y
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function add(... $args) {
+    $add = function($x, $y) {
+        return $x + $y;
+    };
+
+    return partial($add, ... $args);
+}
+
+const add = module . 'add';
+
+/**
+ * mult
+ *
+ * multiply two numbers
+ *
+ * mult :: (Num a) => a -> a -> a
+ *
+ * @param mixed $x
+ * @param mixed $y
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function mult(... $args) {
+    $mult = function($x, $y) {
+        return $x * $y;
+    };
+
+    return partial($mult, ... $args);
+}
+
+const mult = module . 'mult';
+
+/**
+ * div
+ *
+ * divide two numbers
+ *
+ * div :: (Num a) => a -> a -> a
+ *
+ * @param mixed $x
+ * @param mixed $y
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function div(... $args) {
+    $div = function($x, $y) {
+        return $x / $y;
+    };
+
+    return partial($div, ... $args);
+}
+
+const div = module . 'div';
+
+/**
+ * mod
+ *
+ * modulus operator
+ *
+ * mod :: (Num a) => a -> a -> a
+ *
+ * @param mixed $x
+ * @param mixed $y
+ * @return mixed
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function mod(... $args) {
+    $mod = function($x, $y) {
+        return $x % $y;
+    };
+
+    return partial($mod, ... $args);
+}
+
+const mod = module . 'mod';
+
+/**
  * l_or
  *
  * or operation turn to a function
