@@ -41,3 +41,5 @@ $multiply3 = Prelude\partial($multiply, 3);
 
 $add_and_multiply = Prelude\compose($multiply3, $add5);
 var_dump($add_and_multiply(3));
+
+var_dump(Prelude\concatenate([1,2,3],[4,5,6]));

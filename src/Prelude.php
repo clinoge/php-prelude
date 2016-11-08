@@ -335,6 +335,53 @@ function foldr(... $args) {
 const foldr = module . 'foldr';
 
 /**
+ * append
+ *
+ * append an element to a list
+ *
+ * append :: [a] -> a -> [a]
+ *
+ * @param array $xs
+ * @param mixed $x
+ * @return array
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function append(... $args) {
+    $append = function($xs, $x) {
+        $xss = copy($xs);
+        $xss[] = $x;
+        return $xss;
+    };
+
+    return partial($append, ... $args);
+}
+
+const append = module . 'append';
+
+/**
+ * concatenate
+ *
+ * concatenate two lists
+ *
+ * concatenate :: [a] -> [a] -> [a]
+ *
+ * @param array $xs
+ * @param array $ys
+ * @return array
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function concatenate(... $args) {
+    $concatenate = function($xs, $ys) {
+        return foldl(append, $xs, $ys);
+    };
+
+    return partial($concatenate, ... $args);
+}
+
+const concatenate = module . 'concatenate';
+
+
+/**
  * is_empty
  *
  * true if a list is empty
