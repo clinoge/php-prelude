@@ -39,7 +39,7 @@ function Y($fn) {
 }
 const Y = module . 'Y';
 
-/**x
+/**
  * partial
  *
  * creates a function that might be partial applied
@@ -573,7 +573,8 @@ function copy(... $args) {
 
 const copy = module . 'copy';
 
-/** defgeneric
+/**
+ * defgeneric
  *
  * defines a lisp-like generic method
  *
@@ -604,7 +605,8 @@ function defgeneric(... $args) {
 
 const defgeneric = module . 'defgeneric';
 
-/** defmethod
+/**
+ * defmethod
  *
  * instantiates a lisp-like generic method
  *
@@ -637,7 +639,8 @@ function defmethod(... $args) {
 
 const defmethod = module . 'defmethod';
 
-/** filter
+/**
+ * filter
  *
  * filter an array
  *
@@ -711,7 +714,8 @@ function compose(... $args) {
 
 const compose = module . 'compose';
 
-/** dispatch
+/**
+ * dispatch
  *
  * dispatches a function throguh a dispatcher
  *
@@ -768,7 +772,28 @@ function dispatch(... $args) {
 
 const dispatch = module . 'dispatch';
 
-/** stream_cons
+/**
+ * cons
+ *
+ * create a cons cell (not precise)
+ *
+ * @param mixed $x
+ * @param mixed $y
+ * @return array
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function cons(... $args) {
+    $cons = function($x, $y) {
+        return append([$x], $y);
+    };
+
+    return partial($cons, ... $args);
+};
+
+const cons = module . 'cons';
+
+/**
+ * stream_cons
  *
  * create a new stream
  *
@@ -790,7 +815,8 @@ function stream_cons(... $args) {
 
 const stream_cons = module . 'stream_cons';
 
-/** stream_car
+/**
+ * stream_car
  *
  * get first element out of a stream
  *
@@ -810,7 +836,8 @@ function stream_car(... $args) {
 
 const stream_car = module . 'stream_car';
 
-/** stream_cdr
+/**
+ * stream_cdr
  *
  * get second element out of a stream
  *
