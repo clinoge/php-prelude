@@ -54,7 +54,25 @@ const Y = module . 'Y';
 function partial($fn, ... $args) {
     $n_params = arity($fn);
 
-    $partial = function ($recurse) {
+    return n_partial($fn, $n_params, ... $args);
+}
+
+const partial = module . 'partial';
+
+/**
+ * n_partial
+ *
+ * creates a function that might be partial applied n args
+ *
+ * n_partial :: (a -> b -> ... -> c) -> Int -> a -> b -> ... -> c
+ *
+ * @param callable $fn
+ * @param mixed $args
+ * @return callable
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function n_partial($fn, $n, ... $args) {
+    $n_partial = function ($recurse) {
         return function ($fn, $params_left, $args) use ($recurse) {
             if ($params_left === 0) {
                 return $fn(... $args);
@@ -81,10 +99,10 @@ function partial($fn, ... $args) {
         };
     };
 
-    return Y($partial)($fn, $n_params - count($args), $args);
+    return Y($n_partial)($fn, $n - count($args), $args);
 }
 
-const partial = module . 'partial';
+const n_partial = module . 'n_partial';
 
 /**
  * curry
@@ -224,6 +242,38 @@ function zip(... $args) {
 }
 
 const zip = module . 'zip';
+
+/**
+ * flatten
+ *
+ * flatten an n-dimensional array
+ *
+ * flatten :: [a] -> [a]
+ *
+ * @param array $xs
+ * @return array
+ * @author Carlos Gottberg <42linoge@gmail.com>
+ **/
+function flatten(... $args) {
+    $flatten = function($recurse) {
+        return function($xs, $ys = [], $acc = []) use ($recurse) {
+            if (is_empty($xs) && is_empty($ys)) {
+                return $acc;
+            }
+            if (is_empty($xs)) {
+                return $recurse(car($ys), cdr($ys), $acc);
+            }
+            if (is_list($xs)) {
+                return $recurse(car($xs), append($ys, cdr($xs)), $acc);
+            }
+            return $recurse(car($ys), cdr($ys), append($acc, $xs));
+        };
+    };
+
+    return n_partial(Y($flatten), 1, ... $args);
+}
+
+const flatten = module . 'flatten';
 
 /**
  * foldl
@@ -437,6 +487,11 @@ const foldr = module . 'foldr';
 function append(... $args) {
     $append = function($xs, $x) {
         $xss = copy($xs);
+        if (is_list($x)) {
+            return foldl(function($acc, $x) {$acc[] = $x; return $acc;},
+                         $xss,
+                         $x);
+        }
         $xss[] = $x;
         return $xss;
     };
@@ -468,8 +523,14 @@ function concatenate(... $args) {
 
 const concatenate = module . 'concatenate';
 
-
 /**
+ * nullp
+ *
+ * true if value is null
+ *
+ * nullp
+
+ /**
  * is_empty
  *
  * true if a list is empty
@@ -480,16 +541,16 @@ const concatenate = module . 'concatenate';
  * @return boolean
  * @author Carlos Gottberg <42linoge@gmail.com>
  **/
-function is_empty(... $args) {
-    $is_empty = function($xs) {
-        if (empty($xs) === true) {
-            return true;
-        }
-        return false;
-    };
+     function is_empty(... $args) {
+         $is_empty = function($xs) {
+             if (empty($xs) === true) {
+                 return true;
+             }
+             return false;
+         };
 
-    return partial($is_empty, ... $args);
-}
+         return partial($is_empty, ... $args);
+     }
 
 const is_empty = module . 'is_empty';
 
@@ -870,7 +931,10 @@ const stream_cdr = module . 'stream_cdr';
  **/
 function car(... $args) {
     $car = function($xs) {
-        return $xs[0];
+        if (isset($xs[0])) {
+            return $xs[0];
+        }
+        return [];
     };
 
     return partial($car, ... $args);
@@ -894,7 +958,14 @@ function cdr(... $args) {
         if (is_empty($xs)) {
             return [];
         }
-        return array_slice($xs, 1);
+
+        $result =  array_slice($xs, 1);
+
+        if ($result === NULL) {
+            return [];
+        }
+
+        return $result;
     };
 
     return partial($cdr, ... $args);

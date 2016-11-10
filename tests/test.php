@@ -43,3 +43,5 @@ $add_and_multiply = Prelude\compose($multiply3, $add5);
 var_dump($add_and_multiply(3));
 
 var_dump(Prelude\concatenate([1,2,3],[4,5,6]));
+
+var_dump(Prelude\flatten([1,2,[6, [7]], 3,[[[8]], 9], 4,5]));
